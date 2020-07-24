@@ -1,0 +1,5 @@
+news_sites:
+  elpais:
+    url: https://elpais.com/
+  elmundo:
+    url: https://www.elmundo.es/
