@@ -1,5 +1,9 @@
 news_sites:
   elpais:
     url: https://elpais.com/
+    queries:
+      homepage_article_links: '.headline_md a'
   elmundo:
     url: https://www.elmundo.es/
+    queries:
+      homepage_article_links: '.ue-c-cover-content__link'
