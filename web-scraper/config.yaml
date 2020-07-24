@@ -3,7 +3,11 @@ news_sites:
     url: https://elpais.com/
     queries:
       homepage_article_links: '.headline_md a'
+      article_body: '.a_b'
+      article_title: '.a_t'
   elmundo:
     url: https://www.elmundo.es/
     queries:
       homepage_article_links: '.ue-c-cover-content__link'
+      article_body: '.ue-c-article__body'
+      article_title: '.ue-c-article__headline'
