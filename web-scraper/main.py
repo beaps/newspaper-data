@@ -1,5 +1,7 @@
 # Libreria para poder generar un CLI
 import argparse
+import csv
+import datetime
 # Poner cosas más elegantes en la consola en vez de la función print
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -28,8 +30,24 @@ def _news_scraper(news_site_uid):
 		if article:
 			logger.info('Article fetched!')
 			articles.append(article)
-			print(article.title)
-	print(len(articles))
+			break
+	_save_articles(news_site_uid, articles)
+
+def _save_articles(news_site_uid, articles):
+	# Generar fecha de creación del archivo
+	now = datetime.datetime.now().strftime('%Y_%m_%d')
+	# Generar el nombre del archivo
+	out_file_name = '%s_%s_articles.csv' % (news_site_uid, now)
+	# Generar los headers del archivo csv
+	# Filtrar todas las propiedades que no comiencen con _
+	csv_headers = list(filter(lambda property: not property.startswith('_'), dir(articles[0])))
+	# Guardar los artículos
+	with open(out_file_name, mode='w+') as f:
+		writer = csv.writer(f)
+		writer.writerow(csv_headers)
+		for article in articles:
+			row = [str(getattr(article, prop)) for prop in csv_headers]
+			writer.writerow(row)
 
 def _fetch_article(news_site_uid, host, link):
 	logger.info('Start fetching article at %s' % link)
