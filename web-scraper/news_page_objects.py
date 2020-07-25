@@ -44,10 +44,12 @@ class ArticlePage(NewsPage):
 	@property
 	def body(self):
 		result = self._select(self._queries['article_body'])
+		# return result[0].text if result != None else ''
 		return result[0].text if len(result) else ''
 
 	@property
 	def title(self):
 		result = self._select(self._queries['article_title'])
+		# return result[0].text if result != None else ''
 		return result[0].text if len(result) else ''
 

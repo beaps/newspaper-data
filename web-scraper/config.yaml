@@ -1,13 +1,13 @@
 news_sites:
-  elpais:
-    url: https://elpais.com/
-    queries:
-      homepage_article_links: '.headline_md a'
-      article_body: '.a_b'
-      article_title: '.a_t'
   elmundo:
     url: https://www.elmundo.es/
     queries:
       homepage_article_links: '.ue-c-cover-content__link'
       article_body: '.ue-c-article__body'
       article_title: '.ue-c-article__headline'
+  theguardian:
+    url: https://www.theguardian.com/international
+    queries:
+      homepage_article_links: '.u-faux-block-link__overlay '
+      article_body: '.content__article-body'
+      article_title: '.content__headline'
