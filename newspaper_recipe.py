@@ -2,6 +2,7 @@ import argparse
 import logging
 logging.basicConfig(level=logging.INFO)
 from urllib.parse import urlparse
+import hashlib
 
 import pandas as pd
 
@@ -20,6 +21,10 @@ def main(filename):
 	df = _extrat_host(df)
 	# Rellenar los títulos que faltan
 	df = _fill_missing_titles(df)
+	# Generar uids para cada una de las filas
+	df = _generate_uids_for_rows(df)
+	# Eliminar saltos de línea
+	df = _remove_new_lines_from_body(df)
 	return df
 
 def _read_data(filename):
@@ -55,6 +60,24 @@ def _fill_missing_titles(df):
 		)
 	# Asignar los títulos a una columna
 	df.loc[missing_titles_mask, 'title'] = missing_titles.loc[:, 'missing_titles']
+	return df
+
+def _generate_uids_for_rows(df):
+	logger.info('Generating uids for each row')
+	uids = (
+		df
+		.apply(lambda row: hashlib.md5(bytes(row['url'].encode())), axis=1)
+		.apply(lambda hash_object: hash_object.hexdigest()) # Convertir el uid a una representación hexadecimal
+	)
+	# Añadir la columna de uids
+	df['uid'] = uids
+	return df.set_index('uid')
+
+def _remove_new_lines_from_body(df):
+	logger.info('Remove new lines from body')
+	stripped_body = df.apply(lambda row: row['body'].replace('\n', ''), axis=1)
+	# Reemplazamos el body con el nuevo body sin los saltos de línea
+	df['body'] = stripped_body
 	return df
 
 if __name__ == '__main__':
