@@ -16,16 +16,16 @@ def _extract():
 	for news_sites_uid in news_sites_uids:
 		subprocess.run(['python', 'main.py', news_sites_uid], cwd='./extract')
 		subprocess.run(['find', '.', '-name', '{}*'.format(news_sites_uid),
-						'-exec', 'mv', '{}', '../transform/{}_.csv'.format(news_sites_uids), ';'], cwd='./extract')
+						'-exec', 'mv', '{}', '../transform/{}_.csv'.format(news_sites_uid), ';'], cwd='./extract')
 
 def _transform():
 	logger.info('Starting transform process')
 	for news_sites_uid in news_sites_uids:
-		dirty_data_filename = '%s_.csv' % news_sites_uids
+		dirty_data_filename = '%s_.csv' % news_sites_uid
 		clean_data_filename = 'clean_%s' % dirty_data_filename
 		subprocess.run(['python', 'main.py', dirty_data_filename], cwd='./transform')
-		subprocess(['rm', dirty_data_filename], cwd='./transform')
-		subprocess(['mv', clean_data_filename, '../load/%s.csv' % news_sites_uid], cwd='./transform')
+		subprocess.run(['rm', dirty_data_filename], cwd='./transform')
+		subprocess.run(['mv', clean_data_filename, '../load/%s.csv' % news_sites_uid], cwd='./transform')
 
 def _load():
 	logger.info('Starting load process')
