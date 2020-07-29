@@ -5,6 +5,12 @@ from urllib.parse import urlparse
 import hashlib
 
 import pandas as pd
+# Data enrichment - Tokenizar
+import nltk
+# stopwords -> Son palabras como 'el, la' que se utilizan mucho en el lenguaje 
+# pero que no nos sirven para determinar que está sucediendo dentro de nuestro análisis de texto
+from nltk.corpus import stopwords
+stop_words = set(stopwords.words('english'))
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +32,9 @@ def main(filename):
 	# Eliminar saltos de línea
 	df = _remove_new_lines(df, 'body')
 	df = _remove_new_lines(df, 'title')
+	# Enriquecer los datos - Tokenizar
+	df = _enrich_data(df, 'body', 'n_tokens_body')
+	df = _enrich_data(df, 'title', 'n_tokens_title')
 	return df
 
 def _read_data(filename):
@@ -80,6 +89,27 @@ def _remove_new_lines(df, column):
 	# Reemplazamos el body con el nuevo body sin los saltos de línea
 	df[column] = stripped_body
 	return df
+
+def _tokenize_column(df, column_name):
+	return (
+        df
+        .dropna() # Si quedan celdas vacías las eliminamos porque sino nltk va a fallar
+        .apply(lambda row: nltk.word_tokenize(row[column_name]), axis=1)
+        .apply(lambda tokens: list(filter(lambda token: token.isalpha(), tokens))) # Eliminar aquellas palabras que no sean alfanuméricas
+        .apply(lambda tokens: list(map(lambda token: token.lower(), tokens))) # Convertir los tokens a minúsculas
+        .apply(lambda word_list: list(filter(lambda word: word not in stop_words, word_list))) # Eliminar las palabras que sean stopwords
+        .apply(lambda valid_word_list: len(valid_word_list)) # Obtener la longitud, cuántas palabras son
+    )
+
+def _add_tokenized_column(df, column_name, new_column_name):
+	df[new_column_name] = _tokenize_column(df, column_name)
+	return df
+
+def _enrich_data(df, column_name, new_column_name):
+	_tokenize_column(df, column_name)
+	_add_tokenized_column(df, column_name, new_column_name)
+	return df
+
 
 if __name__ == '__main__':
 	# Preguntarle al usuario con que archivo quiere trabajar
