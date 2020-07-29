@@ -35,6 +35,11 @@ def main(filename):
 	# Enriquecer los datos - Tokenizar
 	df = _enrich_data(df, 'body', 'n_tokens_body')
 	df = _enrich_data(df, 'title', 'n_tokens_title')
+	# Eliminar valores duplicados
+	df = _remove_duplicate_entries(df, 'title')
+	df = _drop_rows_with_missing_values(df)
+	# Guardar el archivo
+	_save_data(df, filename)
 	return df
 
 def _read_data(filename):
@@ -109,6 +114,23 @@ def _enrich_data(df, column_name, new_column_name):
 	_tokenize_column(df, column_name)
 	_add_tokenized_column(df, column_name, new_column_name)
 	return df
+
+def _remove_duplicate_entries(df, column_name):
+	logger.info('Removing duplicate entries')
+	df.drop_duplicates(subset=[column_name], keep='first', inplace=True)
+	return df
+
+def _drop_rows_with_missing_values(df):
+	logger.info('Dropping rows with missing values')
+	return df.dropna()
+
+def _save_data(df, filename):
+	# clean_filename = 'clean_%s' % filename
+	# Quitar slash porque da error al guardar el archivo
+	clean_filename = 'clean_' + filename.replace('/', '_')
+
+	logger.info('Saving data at location: %s' % clean_filename)
+	df.to_csv(clean_filename, encoding='utf-8-sig')
 
 
 if __name__ == '__main__':
