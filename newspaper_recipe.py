@@ -24,7 +24,8 @@ def main(filename):
 	# Generar uids para cada una de las filas
 	df = _generate_uids_for_rows(df)
 	# Eliminar saltos de línea
-	df = _remove_new_lines_from_body(df)
+	df = _remove_new_lines(df, 'body')
+	df = _remove_new_lines(df, 'title')
 	return df
 
 def _read_data(filename):
@@ -73,11 +74,11 @@ def _generate_uids_for_rows(df):
 	df['uid'] = uids
 	return df.set_index('uid')
 
-def _remove_new_lines_from_body(df):
+def _remove_new_lines(df, column):
 	logger.info('Remove new lines from body')
-	stripped_body = df.apply(lambda row: row['body'].replace('\n', ''), axis=1)
+	stripped_body = df.apply(lambda row: row[column].replace('\n', ''), axis=1)
 	# Reemplazamos el body con el nuevo body sin los saltos de línea
-	df['body'] = stripped_body
+	df[column] = stripped_body
 	return df
 
 if __name__ == '__main__':
