@@ -9,3 +9,9 @@ Proceso completo de extracción de datos, transformación (limpiarlos, borrar du
 - Pandas
 - Web scraping
 - Anaconda
+
+### Ejecutar proyecto
+
+```
+python pipeline.py
+```
